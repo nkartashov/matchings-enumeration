@@ -1,9 +1,11 @@
 __author__ = 'nikita_kartashov'
 
-from itertools import combinations, chain
+from itertools import combinations, chain, product
 import multiprocessing as mp
 from functools import partial
 from sys import argv
+
+from scoreboard import Scoreboard
 
 
 def powerset(iterable):
@@ -13,11 +15,8 @@ def powerset(iterable):
 
 def is_matching_correct(edges):
     edges = list(edges)
-    starts = frozenset(s for s, e in edges)
-    ends = frozenset(e for s, e in edges)
-    return len(starts.intersection(ends)) == 0 and \
-           len(edges) == len(starts) and \
-           len(edges) == len(ends)
+    vertices = frozenset(s for s, e in edges) | frozenset(e for s, e in edges)
+    return len(vertices) == 2 * len(edges)
 
 
 def enumerate_matchings(points):
@@ -49,31 +48,22 @@ def calculate_score(genomes, topology, scorer, inner_nodes):
 
 
 def shared_adjacencies_scorer(left, right):
-    return len(frozenset(left).intersection(frozenset(right)))
+    return len(frozenset(left) & frozenset(right))
 
 
 def test_pattern(genomes, inner_node_configurations, scorer):
-    max_score = 0
-    is_unique = False
-    max_topology = None
+    scoreboard = Scoreboard(genomes)
     for topology in TOPOLOGIES:
         for inner_nodes in inner_node_configurations:
             score = calculate_score(genomes, topology, scorer, inner_nodes)
-            if score > max_score:
-                max_score = score
-                max_topology = topology
-                is_unique = True
-            if score == max_score:
-                is_unique = False
-    if is_unique:
-        return genomes, max_topology
-    return None
+            scoreboard.update(topology, score, inner_nodes)
+    return scoreboard.get_score()
 
 
 def find_patterns(points, scorer):
     matchings = list(enumerate_matchings(points))
-    inner_node_configurations = list(combinations(matchings, 2))
-    genome_configurations = combinations(matchings, 4)
+    inner_node_configurations = list(product(matchings, repeat=2))
+    genome_configurations = product(matchings, repeat=4)
     pool = mp.Pool()
     partial_test = partial(test_pattern, scorer=scorer, inner_node_configurations=inner_node_configurations)
     patterns = pool.map(partial_test,
