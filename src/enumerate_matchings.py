@@ -4,6 +4,7 @@ from itertools import combinations, chain, product
 import multiprocessing as mp
 from functools import partial
 from sys import argv
+from os import path
 from collections import defaultdict
 from queue import Queue
 
@@ -115,7 +116,7 @@ def find_patterns(points, scorer):
     return filter(lambda e: e is not None, patterns)
 
 
-OUTPUT_RESULT_PATH = '../resource/out.txt'
+OUTPUT_RESULT_PATH = path.abspath(path.join(path.dirname(__file__), '../resource/out.txt'))
 
 
 def main():
@@ -138,9 +139,7 @@ def main():
 
 
 if __name__ == '__main__':
-    genomes = (((0, 1), (2, 3)), ((0, 1), (2, 3)), ((0, 1), (2, 3)), ((0, 1), (2, 3)))
-    inner_configurations = ((((0, 1), (2, 3)), ((0, 2), (1, 3))),)
-    print(calculate_score(genomes, TOPOLOGIES[0], cycles_scorer, inner_configurations[0]))
-    print(calculate_score(genomes, TOPOLOGIES[1], cycles_scorer, inner_configurations[0]))
-    print(test_pattern(genomes, inner_configurations, cycles_scorer))
-    # main()
+    # genomes = (((0, 1), (2, 3)), ((0, 1), (2, 3)), ((0, 1), (2, 3)), ((0, 1), (2, 3)))
+    # inner_configurations = ((((0, 1), (2, 3)), ((0, 2), (1, 3))),)
+    # print(test_pattern(genomes, inner_configurations, cycles_scorer))
+    main()
