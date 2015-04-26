@@ -4,11 +4,12 @@ from itertools import combinations, chain, product
 import multiprocessing as mp
 from functools import partial
 from sys import argv
-from os import path
+from os import path, makedirs
 from collections import defaultdict
 from queue import Queue
 
 from scoreboard import Scoreboard
+from pattern_dumper import dump_pattern, dump_patterns
 
 
 def powerset(iterable):
@@ -113,10 +114,16 @@ def find_patterns(points, scorer):
     partial_test = partial(test_pattern, scorer=scorer, inner_node_configurations=inner_node_configurations)
     patterns = pool.map(partial_test,
                         genome_configurations)
-    return filter(lambda e: e is not None, patterns)
+    return filter(lambda p: p.is_valid(), patterns)
 
 
-OUTPUT_RESULT_PATH = path.abspath(path.join(path.dirname(__file__), '../resource/out.txt'))
+OUTPUT_RESULT_DIRECTORY = path.abspath(path.join(path.dirname(__file__), '../result'))
+PATTERNS_OUTPUT_DIRECTORY = path.join(OUTPUT_RESULT_DIRECTORY, 'patterns')
+PATTERNS_TXT_FILE = path.join(PATTERNS_OUTPUT_DIRECTORY, 'all_patterns.txt')
+
+
+def prepare_for_output():
+    makedirs(PATTERNS_OUTPUT_DIRECTORY, exist_ok=True)
 
 
 def main():
@@ -133,13 +140,22 @@ def main():
     if scorer is None:
         print('Need number of points & scorer (adjacencies|cycles)')
         exit(1)
+    score_comment = argv[2]
     found_patterns = list(find_patterns(points, scorer))
-    with open(OUTPUT_RESULT_PATH, 'w') as output_file:
+    prepare_for_output()
+    with open(PATTERNS_TXT_FILE, 'w') as output_file:
         output_file.write('\n'.join(map(str, found_patterns)))
+    dump_patterns(PATTERNS_OUTPUT_DIRECTORY, found_patterns, points, score_comment)
 
 
 if __name__ == '__main__':
-    # genomes = (((0, 1), (2, 3)), ((0, 1), (2, 3)), ((0, 1), (2, 3)), ((0, 1), (2, 3)))
-    # inner_configurations = ((((0, 1), (2, 3)), ((0, 2), (1, 3))),)
-    # print(test_pattern(genomes, inner_configurations, cycles_scorer))
+    # genomes = (((0, 1), (2, 3)), ((0, 1), (2, 3)), ((1, 2),), ((0, 3),))
+    # matchings = list(enumerate_matchings(4))
+    # inner_node_configurations = list(product(matchings, repeat=2))
+    # print(test_pattern(genomes, inner_node_configurations, cycles_scorer))
     main()
+    # pattern = ((((0, 3), (1, 2)), ((0, 3), (1, 2)), ((0, 2), (1, 3)), ((0, 2), (1, 3))),
+    #            ((0, 1), (2, 3)),
+    #            [(((0, 3), (1, 2)), ((0, 2), (1, 3)))])
+    #
+    # dump_pattern(path.join(OUTPUT_RESULT_DIRECTORY, '0'), pattern, 4)

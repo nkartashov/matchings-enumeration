@@ -1,5 +1,7 @@
 __author__ = 'nikita_kartashov'
 
+from result_pattern import ResultPattern
+
 
 def is_score_greater(new_score, old_score):
     return new_score > old_score
@@ -13,7 +15,8 @@ class Scoreboard(object):
         self._is_valid = False
         self._inner_nodes = []
         self._is_score_better = is_score_better
-        self._is_score_worse = lambda score, current_score: score != current_score and not is_score_better(score, current_score)
+        self._is_score_worse = lambda score, current_score: score != current_score and not is_score_better(score,
+                                                                                                           current_score)
 
     def _new_inner_nodes(self, inner_nodes):
         self._inner_nodes = [inner_nodes]
@@ -37,7 +40,7 @@ class Scoreboard(object):
 
     def get_score(self):
         if self._is_valid:
-            return self._genomes, self._topology, self._inner_nodes
-        return None
+            return ResultPattern(self._genomes, self._topology, self._inner_nodes, self._score)
+        return ResultPattern()
 
 
