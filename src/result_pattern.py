@@ -30,3 +30,6 @@ class ResultPattern(object):
 
     def is_valid(self):
         return self._is_valid
+
+    def __str__(self):
+        return '({0})'.format(' ,'.join([str(self.genomes()), str(self.topology()), str(self.inner_nodes())]))

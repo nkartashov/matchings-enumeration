@@ -9,7 +9,8 @@ from collections import defaultdict
 from queue import Queue
 
 from scoreboard import Scoreboard
-from pattern_dumper import dump_pattern, dump_patterns
+from pattern_dumper import dump_patterns
+from pattern_deduplication import deduplicate
 
 
 def powerset(iterable):
@@ -143,6 +144,7 @@ def main():
     score_comment = argv[2]
     found_patterns = list(find_patterns(points, scorer))
     prepare_for_output()
+    found_patterns = deduplicate(found_patterns)
     with open(PATTERNS_TXT_FILE, 'w') as output_file:
         output_file.write('\n'.join(map(str, found_patterns)))
     dump_patterns(PATTERNS_OUTPUT_DIRECTORY, found_patterns, points, score_comment)
@@ -155,7 +157,7 @@ if __name__ == '__main__':
     # print(test_pattern(genomes, inner_node_configurations, cycles_scorer))
     main()
     # pattern = ((((0, 3), (1, 2)), ((0, 3), (1, 2)), ((0, 2), (1, 3)), ((0, 2), (1, 3))),
-    #            ((0, 1), (2, 3)),
+    # ((0, 1), (2, 3)),
     #            [(((0, 3), (1, 2)), ((0, 2), (1, 3)))])
     #
     # dump_pattern(path.join(OUTPUT_RESULT_DIRECTORY, '0'), pattern, 4)
