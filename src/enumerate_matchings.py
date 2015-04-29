@@ -9,7 +9,8 @@ from collections import defaultdict
 from queue import Queue
 
 from scoreboard import Scoreboard
-from pattern_dumper import dump_patterns
+from topology import Topology
+from pattern_dumper import dump_separate_patterns, dump_all_patterns
 from pattern_deduplication import deduplicate
 
 
@@ -40,9 +41,9 @@ def enumerate_matchings(points):
 # i.e. we follow order ABCD and translate it to numbers and then divide into 2 parts
 
 TOPOLOGIES = \
-    [((0, 1), (2, 3)),
-     ((0, 2), (1, 3)),
-     ((0, 3), (1, 2))]
+    [Topology((0, 1), (2, 3)),
+     Topology((0, 2), (1, 3)),
+     Topology((0, 3), (1, 2))]
 
 
 def calculate_score(genomes, topology, scorer, inner_nodes):
@@ -145,19 +146,9 @@ def main():
     found_patterns = list(find_patterns(points, scorer))
     prepare_for_output()
     found_patterns = deduplicate(found_patterns)
-    with open(PATTERNS_TXT_FILE, 'w') as output_file:
-        output_file.write('\n'.join(map(str, found_patterns)))
-    dump_patterns(PATTERNS_OUTPUT_DIRECTORY, found_patterns, points, score_comment)
+    dump_all_patterns(PATTERNS_TXT_FILE, found_patterns)
+    dump_separate_patterns(PATTERNS_OUTPUT_DIRECTORY, found_patterns, points, score_comment)
 
 
 if __name__ == '__main__':
-    # genomes = (((0, 1), (2, 3)), ((0, 1), (2, 3)), ((1, 2),), ((0, 3),))
-    # matchings = list(enumerate_matchings(4))
-    # inner_node_configurations = list(product(matchings, repeat=2))
-    # print(test_pattern(genomes, inner_node_configurations, cycles_scorer))
     main()
-    # pattern = ((((0, 3), (1, 2)), ((0, 3), (1, 2)), ((0, 2), (1, 3)), ((0, 2), (1, 3))),
-    # ((0, 1), (2, 3)),
-    #            [(((0, 3), (1, 2)), ((0, 2), (1, 3)))])
-    #
-    # dump_pattern(path.join(OUTPUT_RESULT_DIRECTORY, '0'), pattern, 4)

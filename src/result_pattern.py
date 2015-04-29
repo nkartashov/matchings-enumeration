@@ -18,7 +18,7 @@ class ResultPattern(object):
 
     def topology(self):
         if self._is_valid:
-            return self._genomes
+            return self._topology
 
     def inner_nodes(self):
         if self._is_valid:
@@ -32,4 +32,4 @@ class ResultPattern(object):
         return self._is_valid
 
     def __str__(self):
-        return '({0})'.format(' ,'.join([str(self.genomes()), str(self.topology()), str(self.inner_nodes())]))
+        return '({0})'.format(', '.join([str(self.genomes()), str(self.topology()), str(self.inner_nodes())]))

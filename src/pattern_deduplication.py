@@ -68,17 +68,10 @@ def deduplicate(patterns):
 
 
 if __name__ == '__main__':
-    genomes1 = (((0, 1),), ((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 2),))
-    genomes2 = (((0, 1), (2, 3)), ((0, 1),), ((0, 2), (1, 3)), ((0, 2),))
-    g1 = genomes_to_multigraph(genomes1)
-    # g2 = genomes_to_multigraph(genomes2)
-    g2 = genomes_to_multigraph(genomes2, [1, 0, 2, 3])
-    # , [1, 0, 2, 3]
-    # print(g1.edges(data=True))
-    # print(g2.edges(data=True))
-    print(are_genome_graphs_isomorphic(g1, g2))
-    # for colors1 in list(permutations(range(len(genomes1)))):
-    # for colors2 in list(permutations(range(len(genomes1)))):
-    # print(are_genome_graphs_isomorphic(genomes_to_multigraph(genomes1, colors1),
-    # genomes_to_multigraph(genomes2, colors2)))
+    pass
+    # genomes1 = (((0, 1),), ((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 2),))
+    # genomes2 = (((0, 1), (2, 3)), ((0, 1),), ((0, 2), (1, 3)), ((0, 2),))
+    # g1 = genomes_to_multigraph(genomes1)
+    # g2 = genomes_to_multigraph(genomes2, [1, 0, 2, 3])
+    # print(are_genome_graphs_isomorphic(g1, g2))
 
