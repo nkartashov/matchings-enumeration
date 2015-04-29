@@ -1,13 +1,34 @@
 __author__ = 'nikita_kartashov'
 
+from itertools import permutations, repeat, chain
+from operator import itemgetter
+
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
 
 
-def genomes_to_multigraph(genomes):
+def genomes_to_multigraph(genomes, colors=None):
     result = nx.MultiGraph()
-    for i, genome in enumerate(genomes):
-        result.add_edges_from(genome, color=i)
+    if colors is None:
+        colors = range(len(genomes))
+
+    def flatten(colored_edge):
+        c, (s, e) = colored_edge
+        return c, s, e
+
+    def indexed_edges(index, edges):
+        return tuple(map(flatten, zip(repeat(index), edges)))
+
+    # Take all edges and color them, then chain together
+    all_edges = list(chain(*(indexed_edges(*genome) for genome in zip(colors, genomes))))
+
+    # Sort by color, then start, then end
+    for item in range(3):
+        all_edges = sorted(all_edges, key=itemgetter(item))
+
+    for i, s, e in all_edges:
+        result.add_edge(s, e, color=i)
+
     return result
 
 
@@ -21,22 +42,43 @@ def are_genome_graphs_isomorphic(left, right):
     return iso.is_isomorphic(left, right, edge_match=lambda l, r: l == r)
 
 
+COLOR_COMBINATIONS = None, None
+
+
 def deduplicate(patterns):
+    global COLOR_COMBINATIONS
     result_classes = []
     for pattern in patterns:
         genomes = pattern.genomes()
-        genome_graph = genomes_to_multigraph(genomes)
         is_new = True
-        for class_representative, _ in result_classes:
-            if are_genome_graphs_isomorphic(class_representative, genome_graph):
-                is_new = False
-                break
+        genomes_count, color_combinations = COLOR_COMBINATIONS
+        if genomes_count != len(genomes):
+            genomes_count = len(genomes)
+            color_combinations = list(permutations(range(len(genomes))))
+            COLOR_COMBINATIONS = genomes_count, color_combinations
+        for colors in color_combinations:
+            genome_graph = genomes_to_multigraph(genomes, colors)
+            for class_representative, _ in result_classes:
+                if are_genome_graphs_isomorphic(class_representative, genome_graph):
+                    is_new = False
+                    break
         if is_new:
             result_classes.append((genome_graph, pattern))
-    return list(map(lambda c: c[1], result_classes))
+    return list(map(itemgetter(1), result_classes))
 
 
 if __name__ == '__main__':
-    genomes1 = (((1, 2),), ((1, 2),), ((0, 2),), ((0, 2),))
-    genomes2 = (((1, 2),), ((0, 1),), ((1, 2),), ((0, 1),))
-    print(are_genomes_isomorphic(genomes1, genomes2))
+    genomes1 = (((0, 1),), ((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 2),))
+    genomes2 = (((0, 1), (2, 3)), ((0, 1),), ((0, 2), (1, 3)), ((0, 2),))
+    g1 = genomes_to_multigraph(genomes1)
+    # g2 = genomes_to_multigraph(genomes2)
+    g2 = genomes_to_multigraph(genomes2, [1, 0, 2, 3])
+    # , [1, 0, 2, 3]
+    # print(g1.edges(data=True))
+    # print(g2.edges(data=True))
+    print(are_genome_graphs_isomorphic(g1, g2))
+    # for colors1 in list(permutations(range(len(genomes1)))):
+    # for colors2 in list(permutations(range(len(genomes1)))):
+    # print(are_genome_graphs_isomorphic(genomes_to_multigraph(genomes1, colors1),
+    # genomes_to_multigraph(genomes2, colors2)))
+
