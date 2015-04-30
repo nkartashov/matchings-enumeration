@@ -7,12 +7,13 @@ from .cycles_scorer import CyclesScorer
 
 class CyclesAdjacenciesScorer(Scorer):
     def __init__(self):
-        super(CyclesAdjacenciesScorer, self).__init__("cycles & adjacencies")
+        super(CyclesAdjacenciesScorer, self).__init__("cycles_and_adjacencies")
         self._adjacency_scorer = SharedAdjacencyScorer()
         self._cycles_scorer = CyclesScorer()
+        self._null_score_value = self._adjacency_scorer.null_score(), self._cycles_scorer.null_score()
 
     def null_score(self):
-        return self._adjacency_scorer.null_score(), self._cycles_scorer.null_score()
+        return self._null_score_value
 
     def sum_scores(self, left, right):
         return tuple(l + r for l, r in zip(left, right))

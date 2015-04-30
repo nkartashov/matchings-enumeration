@@ -11,7 +11,7 @@ class ResultPattern(object):
         self._is_valid = genomes is not None and \
                          topology is not None and \
                          inner_nodes is not None and \
-                         score is not None \
+                         score is not None
 
 
     def genomes(self):
@@ -37,5 +37,18 @@ class ResultPattern(object):
     def is_valid(self):
         return self._is_valid
 
+    def as_brief_json(self):
+        fields = ["'topology': {0}".format(str(self.topology())),
+                  "'inner_nodes': {0}".format(str(self.inner_nodes())),
+                  "'score': {0}".format(str(self._score)),
+                  "'scoring_method': {0}".format(self._comment)]
+        return '{0}\n'.format('\n'.join(fields))
+
+    def as_json(self):
+        fields = ["'genomes': {0}".format(str(self.genomes())),
+                  self.as_brief_json()]
+
+        return '\n'.join(fields)
+
     def __str__(self):
-        return '({0})'.format(', '.join([str(self.genomes()), str(self.topology()), str(self.inner_nodes())]))
+        return self.as_json()

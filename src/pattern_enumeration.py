@@ -25,6 +25,6 @@ def enumerate_patterns(matchings):
     genome_configurations = product(matchings, repeat=4)
     pool = mp.Pool()
     partial_test = partial(test_pattern, inner_node_configurations=inner_node_configurations)
-    patterns = map(partial_test,
+    patterns = pool.map(partial_test,
                         genome_configurations)
     return filter(lambda p: p.is_valid(), patterns)

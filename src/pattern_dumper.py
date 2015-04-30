@@ -1,8 +1,10 @@
 __author__ = 'nikita_kartashov'
 
 from os import path, makedirs
+from collections import defaultdict
 
 import graphviz as gv
+
 
 COLORS = ['red', 'blue', 'black', 'green']
 
@@ -18,15 +20,19 @@ class PatternDumper(object):
         makedirs(self._result_folder, exist_ok=True)
 
     def dump_separate_patterns(self, patterns, nodes):
-        for i, pattern in enumerate(patterns):
-            pattern_filename = path.join(self._patterns_folder, str(i))
-            self.dump_pattern(pattern_filename, pattern, nodes, pattern.comment())
+        pattern_numbers = defaultdict(lambda: 0)
+        for pattern in patterns:
+            pattern_folder_based_on_score = path.join(self._patterns_folder, pattern.comment())
+            pattern_filename = path.join(pattern_folder_based_on_score,
+                                         str(pattern_numbers[pattern.comment()]))
+            self.dump_pattern(pattern_filename, pattern, nodes)
+            pattern_numbers[pattern.comment()] += 1
 
     def dump_all_patterns(self, found_patterns):
         with open(self._patterns_txt_file, 'w') as output_file:
             output_file.write('\n'.join(map(str, found_patterns)))
 
-    def dump_pattern(self, pattern_directory, pattern, nodes, score_comment):
+    def dump_pattern(self, pattern_directory, pattern, nodes):
         makedirs(pattern_directory, exist_ok=True)
         result_graph = gv.Graph(filename=path.join(pattern_directory, 'pattern'), format='png')
         for i in range(nodes):
@@ -38,6 +44,4 @@ class PatternDumper(object):
                 result_graph.edge(str(head), str(tail), color=genome_color)
         result_graph.render()
         with open(path.join(pattern_directory, 'summary.txt'), 'w') as summary_file:
-            summary_file.write('{0}\n'.format(pattern.topology()))
-            summary_file.write('{0}\n'.format(pattern.inner_nodes()))
-            summary_file.write('{0} {1}\n'.format(score_comment, pattern.score()))
+            summary_file.write(pattern.as_brief_json())
