@@ -45,7 +45,7 @@ def are_genome_graphs_isomorphic(left, right):
 COLOR_COMBINATIONS = None, None
 
 
-def deduplicate(patterns):
+def deduplicate_patterns(patterns):
     global COLOR_COMBINATIONS
     result_classes = []
     for pattern in patterns:
