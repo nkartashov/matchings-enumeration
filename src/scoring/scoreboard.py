@@ -1,6 +1,6 @@
 __author__ = 'nikita_kartashov'
 
-from src.result_pattern import ResultPattern
+from ..result_pattern import ResultPattern
 
 
 def is_score_greater(new_score, old_score):

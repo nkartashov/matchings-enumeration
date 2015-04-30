@@ -4,9 +4,9 @@ import multiprocessing as mp
 from functools import partial
 from itertools import product
 
-from scoring.scoreboard import Scoreboard
-from scoring.scorers.default_scorers import DEFAULT_SCORERS, resolve_multiple_result_patterns
-from topology import DEFAULT_TOPOLOGIES
+from .scoring.scoreboard import Scoreboard
+from .scoring.scorers.default_scorers import DEFAULT_SCORERS, resolve_multiple_result_patterns
+from .topology import DEFAULT_TOPOLOGIES
 
 
 def test_pattern(genomes, inner_node_configurations):

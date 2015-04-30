@@ -1,12 +1,12 @@
 __author__ = 'nikita_kartashov'
 
-from sys import argv
+import sys
 from os import path, makedirs
 
-from matchings import enumerate_matchings
-from pattern_enumeration import enumerate_patterns
-from pattern_deduplication import deduplicate_patterns
-from pattern_dumper import PatternDumper
+from .matchings import enumerate_matchings
+from .pattern_enumeration import enumerate_patterns
+from .pattern_deduplication import deduplicate_patterns
+from .pattern_dumper import PatternDumper
 
 
 OUTPUT_RESULT_DIRECTORY = path.abspath(path.join(path.dirname(__file__), '../result'))
@@ -19,11 +19,11 @@ def prepare_for_output():
 
 
 def main():
-    if len(argv) < 2:
+    if len(sys.argv) < 2:
         print('Need number of points')
         exit(1)
 
-    points = int(argv[1])
+    points = int(sys.argv[1])
     matchings = enumerate_matchings(points)
     prepare_for_output()
     found_patterns = list(enumerate_patterns(matchings))
