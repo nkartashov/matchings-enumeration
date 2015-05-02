@@ -25,7 +25,7 @@ class CyclesAdjacenciesScorer(Scorer):
         return all(n > o for n, o in zip(new_score, old_score))
 
     def is_score_worse(self, new_score, old_score):
-        return all(n < o for n, o in zip(new_score, old_score))
+        return any(n < o for n, o in zip(new_score, old_score))
 
     def are_equal(self, new_score, old_score):
         return any(n == o for n, o in zip(new_score, old_score))
