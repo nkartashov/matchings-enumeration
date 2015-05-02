@@ -13,6 +13,10 @@ class ResultPattern(object):
                          inner_nodes is not None and \
                          score is not None
 
+    def restore_from_matchings(self, matchings):
+        self._genomes = tuple(matchings[index] for index in self._genomes)
+        self._inner_nodes = [tuple(matchings[index] for index in inner_node_configuration)
+                             for inner_node_configuration in self._inner_nodes]
 
     def genomes(self):
         if self._is_valid:

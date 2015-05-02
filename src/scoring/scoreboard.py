@@ -23,7 +23,7 @@ class Scoreboard(object):
         score = self._scorer(self._genomes, topology, inner_nodes)
         if self._scorer.is_score_worse(score, self._score):
             return
-        if score == self._score:
+        if self._scorer.are_equal(score,self._score):
             if self._is_valid and topology == self._topology:
                 self._inner_nodes.append(inner_nodes)
             else:

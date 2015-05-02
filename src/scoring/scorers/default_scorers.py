@@ -1,15 +1,30 @@
 __author__ = 'nikita_kartashov'
 
+from itertools import combinations_with_replacement
+
 from .shared_adjacency_scorer import SharedAdjacencyScorer
 from .cycles_scorer import CyclesScorer
 from .cycles_adjacencies_scorer import CyclesAdjacenciesScorer
+from .cache_scorer import CacheScorer
+
+SCORER_CLASSES = (SharedAdjacencyScorer, CyclesScorer, CyclesAdjacenciesScorer)
 
 
-# Scorers are placed so the last is more valuable
-DEFAULT_SCORERS = (SharedAdjacencyScorer(caching=True),
-                   CyclesScorer(caching=True),
-                   # CyclesAdjacenciesScorer()
-)
+def build_cache(matchings):
+    default_scorers = (SharedAdjacencyScorer(),
+                       CyclesScorer(),)
+
+    result_cache = CacheScorer(len(matchings), SCORER_CLASSES[:2])
+    for i, j in combinations_with_replacement(range(len(matchings)), 2):
+        left, right = matchings[i], matchings[j]
+        for scorer in default_scorers:
+            result_cache.add(scorer.__class__, i, j, scorer.score(left, right))
+    return result_cache
+
+
+def build_cached_scorers(matchings):
+    cache = build_cache(matchings)
+    return tuple(scorer(cache) for scorer in (SharedAdjacencyScorer, CyclesScorer, CyclesAdjacenciesScorer))
 
 
 def resolve_multiple_result_patterns(result_patterns):

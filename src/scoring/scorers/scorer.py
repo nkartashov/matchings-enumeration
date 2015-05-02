@@ -6,11 +6,9 @@ from .cache_scorer import CacheScorer
 
 
 class Scorer(object):
-    cache_scorer = CacheScorer()
-
-    def __init__(self, comment="No scorer", caching=False):
+    def __init__(self, comment="No scorer", cache: CacheScorer=None):
         self._comment = comment
-        self._caching = caching
+        self._cache = cache
 
     def __call__(self, genomes, topology, inner_nodes):
         inner_left, inner_right = inner_nodes
@@ -18,14 +16,14 @@ class Scorer(object):
             self.reduce_score(self.reduce_score(self.cached_score(genomes[j], inner_node) for j in topology[i])
                               for i, inner_node in enumerate(inner_nodes)), self.cached_score(inner_left, inner_right))
 
-    def cls(self):
-        return Scorer
-
     def reduce_score(self, scores):
         return reduce(self.sum_scores, scores, self.null_score())
 
     def null_score(self):
         return 0
+
+    def are_equal(self, left_score, right_score):
+        return left_score == right_score
 
     def sum_scores(self, left, right):
         return left + right
@@ -34,15 +32,10 @@ class Scorer(object):
         return self._comment
 
     def cached_score(self, left, right):
-        if not self._caching:
+        if self._cache is None:
             return self.score(left, right)
         else:
-            cls = self.__class__
-            value = Scorer.cache_scorer.retrieve(cls, left, right)
-            if value is None:
-                value = self.score(left, right)
-                Scorer.cache_scorer.add(cls, left, right, value)
-            return value
+            return self._cache.retrieve(self.__class__, left, right)
 
     def score(self, left, right):
         return 0

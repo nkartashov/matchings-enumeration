@@ -7,8 +7,8 @@ from .scorer import Scorer
 
 
 class CyclesScorer(Scorer):
-    def __init__(self, caching=False):
-        super(CyclesScorer, self).__init__(comment="cycles", caching=caching)
+    def __init__(self, cache=None):
+        super(CyclesScorer, self).__init__(comment="cycles", cache=cache)
 
     def score(self, left, right):
         left = frozenset(left)
