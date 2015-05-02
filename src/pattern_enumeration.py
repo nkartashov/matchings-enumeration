@@ -20,7 +20,6 @@ def test_pattern(genomes, inner_node_configurations):
 
 
 def enumerate_patterns(matchings):
-    matchings = list(matchings)
     inner_node_configurations = list(product(matchings, repeat=2))
     genome_configurations = product(matchings, repeat=4)
     pool = mp.Pool()

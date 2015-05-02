@@ -6,10 +6,10 @@ from .cycles_scorer import CyclesScorer
 
 
 class CyclesAdjacenciesScorer(Scorer):
-    def __init__(self):
-        super(CyclesAdjacenciesScorer, self).__init__("cycles_and_adjacencies")
-        self._adjacency_scorer = SharedAdjacencyScorer()
-        self._cycles_scorer = CyclesScorer()
+    def __init__(self, caching=False):
+        super(CyclesAdjacenciesScorer, self).__init__(comment="cycles_and_adjacencies")
+        self._adjacency_scorer = SharedAdjacencyScorer(caching=caching)
+        self._cycles_scorer = CyclesScorer(caching=caching)
         self._null_score_value = self._adjacency_scorer.null_score(), self._cycles_scorer.null_score()
 
     def null_score(self):

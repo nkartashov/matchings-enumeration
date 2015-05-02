@@ -6,9 +6,10 @@ from .cycles_adjacencies_scorer import CyclesAdjacenciesScorer
 
 
 # Scorers are placed so the last is more valuable
-DEFAULT_SCORERS = (SharedAdjacencyScorer(),
-                   CyclesScorer(),
-                   CyclesAdjacenciesScorer())
+DEFAULT_SCORERS = (SharedAdjacencyScorer(caching=True),
+                   CyclesScorer(caching=True),
+                   # CyclesAdjacenciesScorer()
+)
 
 
 def resolve_multiple_result_patterns(result_patterns):

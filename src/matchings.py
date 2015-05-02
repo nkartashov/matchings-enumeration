@@ -16,4 +16,4 @@ def is_matching_correct(edges):
 
 def enumerate_matchings(points):
     possible_edges = combinations(range(points), 2)
-    return filter(is_matching_correct, powerset(possible_edges))
+    return list(filter(is_matching_correct, powerset(possible_edges)))
