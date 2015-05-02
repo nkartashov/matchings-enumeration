@@ -2,6 +2,7 @@ __author__ = 'nikita_kartashov'
 
 import sys
 import logging as log
+import multiprocessing as mp
 from os import path
 
 from .matchings import enumerate_matchings
@@ -35,14 +36,15 @@ def main():
     log.info('Starting to look for patterns on {0} points'.format(points))
     matchings = enumerate_matchings(points)
     log.info("Finished enumerating matchings, found {0}".format(len(matchings)))
-    found_patterns = list(enumerate_patterns(matchings))
+    multiprocessing_pool = mp.Pool()
+    found_patterns = list(enumerate_patterns(matchings, multiprocessing_pool))
     log.info("Finished looking for patterns, found {0}".format(len(found_patterns)))
     # Restore patterns from indices
     for pattern in found_patterns:
         pattern.restore_from_matchings(matchings)
     found_patterns = deduplicate_patterns(found_patterns)
     log.info("Finished deduplicating patterns, found {0}".format(len(found_patterns)))
-    pattern_dumper = PatternDumper(OUTPUT_RESULT_DIRECTORY)
+    pattern_dumper = PatternDumper(path.join(OUTPUT_RESULT_DIRECTORY, str(points)))
     pattern_dumper.dump_all_patterns(found_patterns)
     pattern_dumper.dump_separate_patterns(found_patterns, points)
 

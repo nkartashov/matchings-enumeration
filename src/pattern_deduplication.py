@@ -2,6 +2,7 @@ __author__ = 'nikita_kartashov'
 
 from itertools import permutations, repeat, chain
 from operator import itemgetter
+from functools import partial
 
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
@@ -42,36 +43,41 @@ def are_genome_graphs_isomorphic(left, right):
     return iso.is_isomorphic(left, right, edge_match=lambda l, r: l == r)
 
 
-COLOR_COMBINATIONS = None, None
+COLOR_COMBINATIONS = list(permutations(range(4)))
+DEFAULT_COLORING = COLOR_COMBINATIONS[0]
+
+
+def test_graphs_on_colored_isomorphism(colors, genomes, class_representative):
+    genome_graph = genomes_to_multigraph(genomes, colors)
+    return are_genome_graphs_isomorphic(class_representative, genome_graph)
 
 
 def deduplicate_patterns(patterns):
-    global COLOR_COMBINATIONS
     result_classes = []
     for pattern in patterns:
         genomes = pattern.genomes()
-        is_new = True
-        genomes_count, color_combinations = COLOR_COMBINATIONS
-        if genomes_count != len(genomes):
-            genomes_count = len(genomes)
-            color_combinations = list(permutations(range(len(genomes))))
-            COLOR_COMBINATIONS = genomes_count, color_combinations
-        for colors in color_combinations:
-            genome_graph = genomes_to_multigraph(genomes, colors)
-            for class_representative, _ in result_classes:
-                if are_genome_graphs_isomorphic(class_representative, genome_graph):
-                    is_new = False
+        is_isomorphic = False
+        for class_representative, _ in result_classes:
+            partial_test = partial(test_graphs_on_colored_isomorphism,
+                                   genomes=genomes,
+                                   class_representative=class_representative)
+            for colors in COLOR_COMBINATIONS:
+                is_isomorphic = partial_test(colors)
+                if is_isomorphic:
                     break
-        if is_new:
+            if is_isomorphic:
+                break
+        if not is_isomorphic:
+            genome_graph = genomes_to_multigraph(genomes, DEFAULT_COLORING)
             result_classes.append((genome_graph, pattern))
     return list(map(itemgetter(1), result_classes))
 
 
 if __name__ == '__main__':
     pass
-    # genomes1 = (((0, 1),), ((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 2),))
-    # genomes2 = (((0, 1), (2, 3)), ((0, 1),), ((0, 2), (1, 3)), ((0, 2),))
-    # g1 = genomes_to_multigraph(genomes1)
-    # g2 = genomes_to_multigraph(genomes2, [1, 0, 2, 3])
-    # print(are_genome_graphs_isomorphic(g1, g2))
+    genomes1 = (((0, 1),), ((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 2),))
+    genomes2 = (((0, 1), (2, 3)), ((0, 1),), ((0, 2), (1, 3)), ((0, 2),))
+    g1 = genomes_to_multigraph(genomes1)
+    g2 = genomes_to_multigraph(genomes2, [1, 0, 2, 3])
+    print(are_genome_graphs_isomorphic(g1, g2))
 
