@@ -1,7 +1,7 @@
 __author__ = 'nikita_kartashov'
 
 from functools import partial
-from itertools import product
+from itertools import product, combinations_with_replacement
 
 from .scoring.scoreboard import Scoreboard
 from .scoring.scorers.default_scorers import build_cached_scorers, resolve_multiple_result_patterns
@@ -20,7 +20,7 @@ def test_pattern(genomes, inner_node_configurations, scorers):
 
 def enumerate_patterns(matchings, pool):
     inner_node_configurations = list(product(range(len(matchings)), repeat=2))
-    genome_configurations = product(range(len(matchings)), repeat=4)
+    genome_configurations = combinations_with_replacement(range(len(matchings)), 4)
     cached_scorers = build_cached_scorers(matchings)
     partial_test = partial(test_pattern, inner_node_configurations=inner_node_configurations, scorers=cached_scorers)
     patterns = pool.map(partial_test,
