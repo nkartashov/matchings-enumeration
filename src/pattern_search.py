@@ -44,7 +44,7 @@ def main():
         pattern.restore_from_matchings(matchings)
     found_patterns = deduplicate_patterns(found_patterns)
     log.info("Finished deduplicating patterns, found {0}".format(len(found_patterns)))
-    pattern_dumper = PatternDumper(path.join(OUTPUT_RESULT_DIRECTORY, str(points)))
+    pattern_dumper = PatternDumper(path.join(OUTPUT_RESULT_DIRECTORY, str(points)), True)
     pattern_dumper.dump_all_patterns(found_patterns)
     pattern_dumper.dump_separate_patterns(found_patterns, points)
 

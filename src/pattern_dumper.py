@@ -1,6 +1,7 @@
 __author__ = 'nikita_kartashov'
 
 from os import path, makedirs
+from shutil import rmtree
 from collections import defaultdict
 
 import graphviz as gv
@@ -10,13 +11,16 @@ COLORS = ['red', 'blue', 'black', 'green']
 
 
 class PatternDumper(object):
-    def __init__(self, result_folder):
+    def __init__(self, result_folder, remove_existing=False):
         self._result_folder = result_folder
+        self._remove_existing = remove_existing
         self._patterns_folder = path.join(result_folder, 'patterns')
         self._patterns_txt_file = path.join(result_folder, 'all_patterns.txt')
         self.prepare_output_folder()
 
     def prepare_output_folder(self):
+        if self._remove_existing:
+            rmtree(self._result_folder)
         makedirs(self._result_folder, exist_ok=True)
 
     def dump_separate_patterns(self, patterns, nodes):
