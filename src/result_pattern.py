@@ -1,5 +1,6 @@
 __author__ = 'nikita_kartashov'
 
+GENOMES = 'ABCD'
 
 class ResultPattern(object):
     def __init__(self, genomes=None, topology=None, inner_nodes=None, score=None, comment=''):
@@ -48,8 +49,11 @@ class ResultPattern(object):
                   "'scoring_method': {0}".format(self._comment)]
         return '{0}\n'.format('\n'.join(fields))
 
+    def readable_genomes(self):
+        return '\n'.join('{0}: {1}'.format(name, str(edges)) for name, edges in zip(GENOMES, self._genomes))
+
     def as_json(self):
-        fields = ["'genomes': {0}".format(str(self.genomes())),
+        fields = ["'genomes':\n{0}".format(self.readable_genomes()),
                   self.as_brief_json()]
 
         return '\n'.join(fields)

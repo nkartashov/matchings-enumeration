@@ -44,4 +44,4 @@ class PatternDumper(object):
                 result_graph.edge(str(head), str(tail), color=genome_color)
         result_graph.render()
         with open(path.join(pattern_directory, 'summary.txt'), 'w') as summary_file:
-            summary_file.write(pattern.as_brief_json())
+            summary_file.write(pattern.as_json())
